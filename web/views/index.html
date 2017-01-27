@@ -1,0 +1,115 @@
+{% extends "_base.html" %}
+
+{% block main %}
+<div class='row'>
+
+	<div class='span4'>
+		<div class='well'>
+			<ul class="nav nav-list" id='device_list'>
+				<li class="nav-header">Devices</li>
+				<li class='muted'>(add a device below)</li>
+			</ul>
+		</div>
+
+		<div class='well'>
+			<ul class="nav nav-list" id='resource_list'>
+				<li class="nav-header">Add a Device</li>
+				<li class='muted'>(no online devices)</li>
+			</ul>
+			<a href='/resources/' id='resources-refresh'>Refresh</a>
+		</div>
+	</div>
+
+	<div class='span8'>
+		<h1 id='device_header'>Device Control 
+			<small class='device_name pull-right'>(no device selected)</small>
+		</h1>
+
+		<div class='row'>
+			<div class='span4'>
+				<h4>Relay Control</h4>
+				<div id='relay_list' class='btn-toolbar'>
+					<a href='/device/-1/relay/1' class='btn btn-large disabled btn-primary'>Relay 1</a>
+					<a href='/device/-1/relay/2' class='btn btn-large disabled'>Relay 2</a>
+				</div>
+			</div>
+
+			<div class='span4' id='readings'>
+				<h4>Current Readings</h4>
+				<div>
+					<span class='rlabel'>Temp:</span> 
+					<strong id='temp'>(unknown)</strong>
+					<span class='muted'>&deg;c</span>
+				</div>
+				<div>
+					<span class='rlabel'>Light:</span> 
+					<strong id='light'>(unknown)</strong>
+					<span class='muted'>%</span>
+				</div>
+				<div>
+					<span class='rlabel'>PIR:</span> 
+					<strong id='pir'>(unknown)</strong>
+					<span class='muted'></span>
+				</div>
+			</div>
+		</div>
+
+		<div class='row'>
+			<div class='span8'>
+				<div id='chart'> </div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+{% raw %}
+<script type='text/html' id='resource_line'>
+	<li>
+		<a href='/device/'>
+			<i class='icon-plus-sign'></i>
+			<span class='resource res-{{resource}}'>{{ resource }}</span>
+			<span class='pull-right'>
+				<span class='label label-important' title='unavailable'>
+					<i class='icon-remove'></i></span>
+				<span class='label label-success' style='display:none' title='available'>
+					<i class='icon-ok'></i></span>
+			</span>
+		</a>
+	</li>
+</script>
+<script type='text/html' id='device_line'>
+	<li>
+		<a href='/device/{{ id }}'>
+			<i class='icon-home'></i> 
+			<span class='resource res-{{resource}}'>{{ resource }}</span> 
+			<span class='pull-right'>
+				<span class='label label-important' title='unavailable'>
+					<i class='icon-remove'></i></span>
+				<span class='label label-success' style='display:none' title='available'>
+					<i class='icon-ok'></i></span>
+			</span>
+		</a>
+	</li>
+</script>
+{% endraw %}
+{% endblock %}
+
+{% block more_script %}
+<script type="text/javascript" src="/_ah/channel/jsapi"></script>
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/d3/3.0.1/d3.v3.min.js"></script>
+<script type='text/javascript' src='/static/js/lib/cubism.v1.min.js'></script>
+{% if debug %}
+<script type='text/javascript' src='/static/js/remoht.js'></script>
+{% else %}
+<script type='text/javascript' src='/static/js/remoht.min.js'></script>
+{% endif %}
+<script type='text/javascript'>
+	$(document).ready(function() {
+		{% if gae_users.get_current_user() %}
+		remoht.logged_in = true
+		{% endif %}
+		remoht.init()
+	});
+</script>
+{% endblock %}
